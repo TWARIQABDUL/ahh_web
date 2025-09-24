@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Input, Form, Divider, Space } from "antd";
+import { Button, Input, Form, Space } from "antd";
 import {
   GoogleOutlined,
   FacebookOutlined,
