@@ -28,7 +28,7 @@ const services = [
   },
 ];
 
-function Services() {
+const Services: React.FC  = ()=>{
   return (
     <Content className="py-20 bg-gray-50">
       <div className="max-w-6xl mx-auto px-6 text-center">

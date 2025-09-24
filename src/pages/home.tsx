@@ -3,7 +3,7 @@ import HeroSection from "../components/Hero";
 import AboutUs from '../components/aboutus';
 import WhyUs from '../components/whyus.tsx';
 import Services from '../components/service.tsx';
-function HomePage() {
+const HomePage: React.FC  =()=> {
   return (
     <>
     <HeroSection/>
