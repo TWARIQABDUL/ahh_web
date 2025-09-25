@@ -10,7 +10,7 @@ const backgroundImages = [
   "/images/event3.png",
 ];
 
-function HeroSection() {
+const HeroSection:React.FC = ()=> {
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
 
   // Rotate images every 5s
@@ -24,7 +24,7 @@ function HeroSection() {
   }, []);
 
   return (
-    <div className="w-full overflow-hidden">
+    <header className="w-full overflow-hidden">
       <Content
         className="relative flex items-center justify-center h-[90vh] bg-cover bg-center !bg-no-repeat transition-all duration-1000 ease-in-out animate-kenburns"
         style={{
@@ -62,7 +62,7 @@ function HeroSection() {
           </div>
         </div>
       </Content>
-    </div>
+    </header>
   );
 }
 

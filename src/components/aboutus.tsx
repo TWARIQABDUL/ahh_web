@@ -1,11 +1,9 @@
-import { Layout, Button } from "antd";
+import { Button } from "antd";
 import React from "react";
 
-const { Content } = Layout;
-
-function AboutUs() {
+const AboutUs:React.FC =()=> {
   return (
-    <Content className="py-20 bg-white">
+    <section className="py-20 bg-white">
       <div className="container mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
         
         {/* Left: Text */}
@@ -42,7 +40,7 @@ function AboutUs() {
           />
         </div>
       </div>
-    </Content>
+    </section>
   );
 }
 

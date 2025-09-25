@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Input, Form, Select } from "antd";
+import { Button, Input, Form, Select, message } from "antd";
 import {
   GoogleOutlined,
   FacebookOutlined,
@@ -8,7 +8,7 @@ import {
   UserOutlined,
   PhoneOutlined,
 } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ROUTES } from "../routes/routes.";
 
 const { Option } = Select;
@@ -20,11 +20,48 @@ interface RegisterFormValues {
   gender: string;
   password: string;
   confirmPassword: string;
+  profile_details: string;
 }
 
 const RegisterPage: React.FC = () => {
-  const onFinish = (values: RegisterFormValues) => {
-    console.log("Register values:", values);
+  const navigate = useNavigate();
+
+  const onFinish = async (values: RegisterFormValues) => {
+    const nameParts = values.fullName.trim().split(" ");
+    const first_name = nameParts[0];
+    const last_name = nameParts.slice(1).join(" ");
+
+    const payload = {
+      email: values.email,
+      first_name: first_name,
+      last_name: last_name,
+      password: values.password,
+      profile_details: values.profile_details,
+      role: "Member",
+    };
+
+    try {
+      const response = await fetch(
+        "https://ahh-backend.onrender.com/auth/signup",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(payload),
+        }
+      );
+
+      if (response.ok) {
+        message.success("Registration successful!");
+        navigate(ROUTES.LOGIN);
+      } else {
+        const errorData = await response.json();
+        message.error(errorData.message || "Registration failed.");
+      }
+    } catch (error) {
+      message.error("An error occurred. Please try again.");
+    }
   };
 
   return (
@@ -120,6 +157,19 @@ const RegisterPage: React.FC = () => {
                 </Select>
               </Form.Item>
             </div>
+            
+            {/* Profile Details */}
+            <Form.Item
+              name="profile_details"
+              rules={[{ required: true, message: "Please enter your profile details!" }]}
+            >
+              <Input.TextArea
+                placeholder="Profile Details (e.g., Experienced entrepreneur in healthcare)"
+                size="large"
+                className="rounded-lg"
+                rows={4}
+              />
+            </Form.Item>
 
             {/* Password */}
             <Form.Item
