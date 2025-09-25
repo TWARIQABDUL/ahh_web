@@ -1,8 +1,7 @@
-import { Layout, Card } from "antd";
+import { Card } from "antd";
 import { BulbOutlined, TeamOutlined, BookOutlined } from "@ant-design/icons";
 import React from "react";
 
-const { Content } = Layout;
 
 const services = [
   {
@@ -30,7 +29,7 @@ const services = [
 
 const Services: React.FC  = ()=>{
   return (
-    <Content className="py-20 bg-gray-50">
+    <section className="py-20 bg-gray-50">
       <div className="max-w-6xl mx-auto px-6 text-center">
         {/* Section Title */}
         <h2 className="text-3xl md:text-4xl font-bold text-primary mb-6 animate-fadeInUp">
@@ -61,7 +60,7 @@ const Services: React.FC  = ()=>{
           ))}
         </div>
       </div>
-    </Content>
+    </section>
   );
 }
 

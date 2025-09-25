@@ -3,9 +3,9 @@ import React from 'react'
 import { Outlet } from 'react-router-dom'
 // import Header from '../components/Header'
 import AppHeader from '../components/Header'
-import Hero from '../components/Hero'
+import Footer from '../components/footer'
 
-function LayoutPage() {
+const LayoutPage:React.FC = ()=> {
   return (
     <Layout>
         <Layout.Content>
@@ -13,9 +13,7 @@ function LayoutPage() {
             {/* <Hero/> */}
             <Outlet/>
         </Layout.Content>
-        <Layout.Footer>
-            <div>Footer Content</div>
-        </Layout.Footer>
+        <Footer/>
     </Layout>
   )
 }
