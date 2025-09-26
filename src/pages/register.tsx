@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Button, Input, Form, Select, message } from "antd";
 import {
   GoogleOutlined,
@@ -24,17 +24,23 @@ interface RegisterFormValues {
 }
 
 const RegisterPage: React.FC = () => {
+
+  const baseUrl = import.meta.env.VITE_BASE_URL
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [form] = Form.useForm<RegisterFormValues>();
 
   const onFinish = async (values: RegisterFormValues) => {
+    setLoading(true);
+
     const nameParts = values.fullName.trim().split(" ");
     const first_name = nameParts[0];
     const last_name = nameParts.slice(1).join(" ");
 
     const payload = {
       email: values.email,
-      first_name: first_name,
-      last_name: last_name,
+      first_name,
+      last_name,
       password: values.password,
       profile_details: values.profile_details,
       role: "Member",
@@ -42,25 +48,42 @@ const RegisterPage: React.FC = () => {
 
     try {
       const response = await fetch(
-        "https://ahh-backend.onrender.com/auth/signup",
+        `${baseUrl}/auth/signup`,
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify(payload),
         }
       );
+
+      const data = await response.json();
 
       if (response.ok) {
         message.success("Registration successful!");
         navigate(ROUTES.LOGIN);
       } else {
-        const errorData = await response.json();
-        message.error(errorData.message || "Registration failed.");
+        // ✅ Handle field-specific errors
+        if (data.detail && data.detail.toLowerCase().includes("email")) {
+          form.setFields([
+            {
+              name: "email",
+              errors: [data.detail],
+            },
+          ]);
+        } else if (data.errors && Array.isArray(data.errors)) {
+          data.errors.forEach((err: string) =>
+            message.error(err)
+          );
+        } else if (typeof data.message === "string") {
+          message.error(data.message);
+        } else {
+          message.error("Registration failed. Please check your details.");
+        }
       }
     } catch (error) {
-      message.error("An error occurred. Please try again.");
+      message.error("Network error. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -73,11 +96,7 @@ const RegisterPage: React.FC = () => {
           alt="Organization"
           className="w-full h-48 md:h-full object-cover"
         />
-
-        {/* Gradient overlay for better text readability */}
         <div className="hidden md:block absolute inset-0 bg-gradient-to-br from-blue-600/60 to-indigo-700/60"></div>
-
-        {/* Text overlay */}
         <div className="hidden md:block absolute bottom-12 text-center px-8 text-white">
           <h2 className="text-3xl font-bold drop-shadow-lg">Welcome to AHH</h2>
           <p className="mt-2 text-sm opacity-90">
@@ -88,7 +107,6 @@ const RegisterPage: React.FC = () => {
 
       {/* Right side form */}
       <div className="flex w-full md:w-1/2 justify-center items-center p-6 bg-gray-50">
-        {/* Increased max-w from md → lg */}
         <div className="w-full max-w-lg bg-white/90 backdrop-blur-sm p-10 rounded-2xl shadow-2xl">
           <h1 className="text-3xl font-extrabold mb-2 text-center text-gray-800">
             Create an Account
@@ -98,39 +116,30 @@ const RegisterPage: React.FC = () => {
           </p>
 
           <Form<RegisterFormValues>
+            form={form}
             name="register"
             layout="vertical"
             onFinish={onFinish}
             className="space-y-4"
           >
-            {/* Row 1: Full Name + Phone */}
+            {/* Full Name + Phone */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <Form.Item
                 name="fullName"
                 rules={[{ required: true, message: "Please enter your full name!" }]}
               >
-                <Input
-                  prefix={<UserOutlined className="text-gray-400" />}
-                  placeholder="Full Name"
-                  size="large"
-                  className="rounded-lg"
-                />
+                <Input prefix={<UserOutlined />} placeholder="Full Name" size="large" />
               </Form.Item>
 
               <Form.Item
                 name="phone"
                 rules={[{ required: true, message: "Please enter your phone number!" }]}
               >
-                <Input
-                  prefix={<PhoneOutlined className="text-gray-400" />}
-                  placeholder="+250 7xx xxx xxx"
-                  size="large"
-                  className="rounded-lg"
-                />
+                <Input prefix={<PhoneOutlined />} placeholder="+250 7xx xxx xxx" size="large" />
               </Form.Item>
             </div>
 
-            {/* Row 2: Email + Gender */}
+            {/* Email + Gender */}
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
               <Form.Item
                 name="email"
@@ -139,36 +148,26 @@ const RegisterPage: React.FC = () => {
                   { type: "email", message: "Please enter a valid email!" },
                 ]}
               >
-                <Input
-                  prefix={<MailOutlined className="text-gray-400" />}
-                  placeholder="Email Address"
-                  size="large"
-                  className="rounded-lg"
-                />
+                <Input prefix={<MailOutlined />} placeholder="Email Address" size="large" />
               </Form.Item>
 
               <Form.Item
                 name="gender"
                 rules={[{ required: true, message: "Please select your gender!" }]}
               >
-                <Select size="large" placeholder="Select Gender" className="rounded-lg">
+                <Select size="large" placeholder="Select Gender">
                   <Option value="Male">Male</Option>
                   <Option value="Female">Female</Option>
                 </Select>
               </Form.Item>
             </div>
-            
+
             {/* Profile Details */}
             <Form.Item
               name="profile_details"
               rules={[{ required: true, message: "Please enter your profile details!" }]}
             >
-              <Input.TextArea
-                placeholder="Profile Details (e.g., Experienced entrepreneur in healthcare)"
-                size="large"
-                className="rounded-lg"
-                rows={4}
-              />
+              <Input.TextArea rows={4} placeholder="Profile details..." />
             </Form.Item>
 
             {/* Password */}
@@ -177,12 +176,7 @@ const RegisterPage: React.FC = () => {
               rules={[{ required: true, message: "Please enter your password!" }]}
               hasFeedback
             >
-              <Input.Password
-                prefix={<LockOutlined className="text-gray-400" />}
-                placeholder="Password"
-                size="large"
-                className="rounded-lg"
-              />
+              <Input.Password prefix={<LockOutlined />} placeholder="Password" size="large" />
             </Form.Item>
 
             {/* Confirm Password */}
@@ -202,12 +196,7 @@ const RegisterPage: React.FC = () => {
                 }),
               ]}
             >
-              <Input.Password
-                prefix={<LockOutlined className="text-gray-400" />}
-                placeholder="Confirm Password"
-                size="large"
-                className="rounded-lg"
-              />
+              <Input.Password prefix={<LockOutlined />} placeholder="Confirm Password" size="large" />
             </Form.Item>
 
             {/* Submit */}
@@ -216,9 +205,10 @@ const RegisterPage: React.FC = () => {
                 type="primary"
                 htmlType="submit"
                 size="large"
-                className="w-full rounded-lg bg-blue-600 hover:bg-blue-700 shadow-md transition-transform transform hover:scale-[1.02]"
+                loading={loading}
+                className="w-full rounded-lg bg-blue-600 hover:bg-blue-700"
               >
-                Register
+                {loading ? "Registering..." : "Register"}
               </Button>
             </Form.Item>
           </Form>
@@ -232,18 +222,10 @@ const RegisterPage: React.FC = () => {
 
           {/* Social buttons */}
           <div className="flex gap-4">
-            <Button
-              icon={<GoogleOutlined />}
-              size="large"
-              className="flex-1 rounded-lg border border-gray-200 shadow-sm hover:bg-red-50 text-red-500"
-            >
+            <Button icon={<GoogleOutlined />} size="large" className="flex-1">
               Google
             </Button>
-            <Button
-              icon={<FacebookOutlined />}
-              size="large"
-              className="flex-1 rounded-lg border border-gray-200 shadow-sm hover:bg-blue-50 text-blue-600"
-            >
+            <Button icon={<FacebookOutlined />} size="large" className="flex-1">
               Facebook
             </Button>
           </div>
