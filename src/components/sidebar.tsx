@@ -55,7 +55,7 @@ const Sidebar: React.FC = () => {
             alt="Profile"
             className="w-20 h-20 rounded-full object-cover"
           />
-          <p className="mt-3 font-semibold text-[var(--color-white)]">CLAUDIA</p>
+          <p className="mt-3 font-semibold text-[var(--color-white)]">CLAUDIAN</p>
           <Button type="link" className="!text-[var(--color-teal)] !p-0">
             Edit Profile
           </Button>
