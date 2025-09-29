@@ -12,6 +12,8 @@ import { ConfigProvider } from 'antd'
 // import Home from './pages/home.tsx'
 import LayoutPage from './layout/layout.tsx'
 import HomePage from './pages/home.tsx'
+import Dashboardlayout from './layout/dashboardlayout.tsx'
+import DashboardPage from './pages/dashboard.tsx'
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <ConfigProvider theme={theme}>
@@ -19,6 +21,9 @@ createRoot(document.getElementById('root')!).render(
       <Routes>
         <Route element={<LayoutPage />}>
           <Route path={ROUTES.HOME} element={<HomePage />} />
+        </Route>
+        <Route path={ROUTES.DASHBOARD} element={<Dashboardlayout />}>
+          <Route index element={<DashboardPage />} />
         </Route>
         <Route path={ROUTES.LOGIN} element={<LoginPage />} />
         <Route path={ROUTES.REGISTER} element={<RegisterPage />} />

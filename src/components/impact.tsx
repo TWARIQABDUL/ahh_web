@@ -44,7 +44,7 @@ const Impact: React.FC  = ()=>  {
               style={{ animationDelay: `${index * 0.3 + 0.6}s`, animationFillMode: "forwards" }}
             >
               {item.icon}
-              <h3 className="mt-4 text-3xl font-bold text-primary">{item.value}</h3>
+              <h3 className="mt-4 text-3xl font-bold text-white">{item.value}</h3>
               <p className="mt-2 text-gray-600">{item.label}</p>
             </div>
           ))}
