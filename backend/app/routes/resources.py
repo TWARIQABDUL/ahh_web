@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from ..database import get_db
 from ..models import User, Resource, ResourceCategory
+from ..models.enums import UserRole
 from ..schemas import (
     ResourceCreate, ResourceResponse, ResourceUpdate,
     ResourceCategoryCreate, ResourceCategoryResponse
@@ -11,13 +12,16 @@ from ..security import get_current_user
 router = APIRouter(prefix="/resources", tags=["resources"])
 
 # Resource Categories
-@router.post("/categories/", response_model=ResourceCategoryResponse, summary="Create resource category", description="Create a new resource category.")
+@router.post("/categories/", response_model=ResourceCategoryResponse, summary="Create resource category", description="Create a new resource category (Admin only).")
 def create_resource_category(
     category: ResourceCategoryCreate,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    # TODO: Add admin check
+    # Only admins can create resource categories
+    if current_user.role != UserRole.ADMIN:
+        raise HTTPException(status_code=403, detail="Only admins can create resource categories")
+        
     new_category = ResourceCategory(category_name=category.category_name)
     db.add(new_category)
     db.commit()
@@ -30,12 +34,16 @@ def get_resource_categories(db: Session = Depends(get_db)):
     return categories
 
 # Resources
-@router.post("/", response_model=ResourceResponse, summary="Create resource", description="Create a new resource.")
+@router.post("/", response_model=ResourceResponse, summary="Create resource", description="Create a new resource (Mentors and Admins only).")
 def create_resource(
     resource: ResourceCreate,
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
+    # Only mentors and admins can create resources
+    if current_user.role not in [UserRole.MENTOR, UserRole.ADMIN]:
+        raise HTTPException(status_code=403, detail="Only mentors and admins can create resources")
+    
     # Verify category exists
     category = db.query(ResourceCategory).filter(ResourceCategory.category_id == resource.category_id).first()
     if not category:

@@ -41,6 +41,7 @@ class UserResponse(BaseModel):
     last_name: str
     email: str
     role: UserRole
+    is_approved: bool
     profile_details: Optional[str]
     created_at: datetime
 
@@ -53,6 +54,7 @@ class UserResponse(BaseModel):
                 "last_name": "Doe",
                 "email": "john.doe@example.com",
                 "role": "Member",
+                "is_approved": True,
                 "profile_details": "Experienced entrepreneur in healthcare",
                 "created_at": "2023-01-01T00:00:00Z"
             }

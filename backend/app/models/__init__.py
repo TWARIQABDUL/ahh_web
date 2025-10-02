@@ -6,3 +6,4 @@ from .applications import Application
 from .milestones import Milestone
 from .mentor_matches import MentorMatch
 from .messages import Message
+from .programs import Program
