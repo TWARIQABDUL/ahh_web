@@ -14,7 +14,7 @@ def hash_password(password: str) -> str:
     return pwd_context.hash(password)
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
-    return pwd_context.verify(plain_password, hashed_password)
+    return pwd_context.verify(plain_password[:72], hashed_password)
 
 def create_access_token(data: dict):
     to_encode = data.copy()
@@ -40,4 +40,6 @@ def get_current_user(
     user = db.query(User).filter(User.user_id == int(user_id)).first()
     if user is None:
         raise HTTPException(status_code=status.HTTP_401_UNAUTHORIZED, detail="User not found")
+    if not user.is_approved:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Account not approved yet")
     return user

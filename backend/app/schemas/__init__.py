@@ -5,3 +5,4 @@ from .applications import ApplicationCreate, ApplicationResponse, ApplicationUpd
 from .milestones import MilestoneCreate, MilestoneResponse, MilestoneUpdate
 from .mentor_matches import MentorMatchCreate, MentorMatchResponse, MentorMatchUpdate
 from .messages import MessageCreate, MessageResponse, MessageUpdate
+from .programs import ProgramCreate, ProgramResponse, ProgramUpdate
