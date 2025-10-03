@@ -11,7 +11,7 @@ import {
   MenuUnfoldOutlined,
 } from "@ant-design/icons";
 import { Link } from "react-router-dom";
-import { ROUTES } from "../routes/routes.";
+import { ROUTES } from "../routes/routes.tsx";
 
 const { Sider } = Layout;
 
@@ -20,11 +20,11 @@ const Sidebar: React.FC = () => {
 
   const menuItems = [
     { key: "dashboard", label: <Link to={ROUTES.DASHBOARD}>Dashboard</Link>, icon: <HomeOutlined /> },
-    { key: "resources", label: <Link to="/resources">Resource Center</Link>, icon: <BookOutlined /> },
-    { key: "programs", label: <Link to="/programs">Programs</Link>, icon: <AppstoreOutlined /> },
-    { key: "ventures", label: <Link to="/ventures">Ventures</Link>, icon: <AppstoreOutlined /> },
-    { key: "mentors", label: <Link to="/mentors">Mentors</Link>, icon: <TeamOutlined /> },
-    { key: "settings", label: <Link to="/settings">Settings</Link>, icon: <SettingOutlined /> },
+    { key: "resources", label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.RESOURCE_CENTER}`}>Resource Center</Link>, icon: <BookOutlined /> },
+    { key: "programs", label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.PROGRAMS}`}>Programs</Link>, icon: <AppstoreOutlined /> },
+    { key: "ventures", label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.VENTURES}`}>Ventures</Link>, icon: <AppstoreOutlined /> },
+    { key: "mentors", label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.MENTORS}`}>Mentors</Link>, icon: <TeamOutlined /> },
+    { key: "settings", label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.SETTINGS}`}>Settings</Link>, icon: <SettingOutlined /> },
     { key: "logout", label: <Link to="/logout">Logout</Link>, icon: <LogoutOutlined /> },
   ];
 

@@ -7,7 +7,7 @@ import {
   MailOutlined,
 } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
-import { ROUTES } from "../routes/routes.";
+import { ROUTES } from "../routes/routes";
 
 interface LoginFormValues {
   email: string;
@@ -36,7 +36,9 @@ const LoginPage: React.FC = () => {
         messageApi.success("Login successful!");
         localStorage.setItem("access_token", data.access_token);
         localStorage.setItem("user", JSON.stringify(data.user));
-        navigate(ROUTES.HOME);
+        console.log(data);
+        
+        navigate(ROUTES.DASHBOARD);
       } else {
         if (data.detail) {
           messageApi.error(data.detail);
