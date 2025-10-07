@@ -9,7 +9,7 @@ import {
   PhoneOutlined,
 } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
-import { ROUTES } from "../routes/routes.";
+import { ROUTES } from "../routes/routes";
 
 const { Option } = Select;
 

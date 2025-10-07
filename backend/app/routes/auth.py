@@ -2,6 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from ..database import get_db
 from ..models.user import User
+from ..models.enums import UserRole
 from ..schemas import UserCreate, UserLogin, UserResponse
 from ..security import hash_password, verify_password, create_access_token
 
@@ -17,13 +18,15 @@ def signup(user: UserCreate, db: Session = Depends(get_db)):
     # Hash password
     hashed = hash_password(user.password)
     
-    # Create user
+    # Create user - admins are approved by default, others need approval
+    is_approved = user.role == UserRole.ADMIN
     new_user = User(
         first_name=user.first_name,
         last_name=user.last_name,
         email=user.email,
         password_hash=hashed,
         role=user.role,
+        is_approved=is_approved,
         profile_details=user.profile_details
     )
     db.add(new_user)
@@ -37,6 +40,12 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
     if not db_user or not verify_password(user.password, db_user.password_hash):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     
-    # Create token
-    token = create_access_token({"sub": str(db_user.user_id)})
+    # Add extra claims in the token
+    token_data = {
+        "sub": str(db_user.user_id),
+        "role": db_user.role,
+        "email": db_user.email,
+        "fullName": f"{db_user.first_name} {db_user.last_name}"
+    }
+    token = create_access_token(token_data)
     return {"access_token": token, "token_type": "bearer", "user": UserResponse.from_orm(db_user)}

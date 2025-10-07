@@ -1,11 +1,11 @@
 # African Healthpreneurship Hub Backend API
 
-This is the comprehensive backend API for the African Healthpreneurship Hub (AHH) web portal, built with FastAPI and PostgreSQL. The API provides complete CRUD operations for users, ventures, resources, applications, milestones, mentor matching, and messaging functionality.
+This is the comprehensive backend API for the African Healthpreneurship Hub (AHH) web portal, built with FastAPI and PostgreSQL. The API provides complete CRUD operations for users, ventures, resources, applications, milestones, mentor matching, messaging functionality, program management, and administrative features.
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Python 3.8+
+- Python 3.12
 - PostgreSQL database
 - Virtual environment (recommended)
 
@@ -126,6 +126,27 @@ This is the comprehensive backend API for the African Healthpreneurship Hub (AHH
 | PUT | `/messages/{message_id}` | Mark message as read | ✅ |
 | DELETE | `/messages/{message_id}` | Delete message | ✅ |
 
+### 🎓 Program Management
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| POST | `/programs/` | Create new program (Admin only) | ✅ (Admin) |
+| GET | `/programs/` | Get all active programs | ❌ |
+| GET | `/programs/{program_id}` | Get specific program | ❌ |
+| PUT | `/programs/{program_id}` | Update program (Admin only) | ✅ (Admin) |
+| DELETE | `/programs/{program_id}` | Delete program (Admin only) | ✅ (Admin) |
+
+### 🛠️ Admin Management
+
+| Method | Endpoint | Description | Auth Required |
+|--------|----------|-------------|---------------|
+| GET | `/admin/dashboard/metrics` | Get platform metrics | ✅ (Admin) |
+| GET | `/admin/users` | Get all users | ✅ (Admin) |
+| PUT | `/admin/users/{user_id}` | Update any user | ✅ (Admin) |
+| DELETE | `/admin/users/{user_id}` | Deactivate user | ✅ (Admin) |
+| GET | `/admin/applications` | Get all applications | ✅ (Admin) |
+| PUT | `/admin/applications/{application_id}/review` | Review application | ✅ (Admin) |
+
 ## 📝 Detailed API Documentation
 
 ### 🔐 Authentication
@@ -142,6 +163,11 @@ This is the comprehensive backend API for the African Healthpreneurship Hub (AHH
   "profile_details": "Experienced healthcare entrepreneur"
 }
 ```
+
+**Available Roles:**
+- `"Admin"` - System administrator
+- `"Mentor"` - Experienced healthcare professional
+- `"Member"` - Healthcare entrepreneur/startup founder
 
 **Response (201):**
 ```json
@@ -439,8 +465,9 @@ This is the comprehensive backend API for the African Healthpreneurship Hub (AHH
 ## 📊 Data Models & Enums
 
 ### User Roles
-- `"Member"` - Regular user who creates ventures
-- `"Mentor"` - Experienced user who provides guidance
+- `"Admin"` - System administrator with full access to manage platform
+- `"Mentor"` - Experienced user who provides guidance to members
+- `"Member"` - Regular user who creates ventures and applies to programs
 
 ### Application Status
 - `"submitted"` - Initial application state
@@ -458,24 +485,164 @@ This is the comprehensive backend API for the African Healthpreneurship Hub (AHH
 - `"in_progress"` - Currently working
 - `"completed"` - Finished
 
+### 🎓 Program Management
+
+#### POST `/programs/` - Create Program (Admin Only)
+**Headers:** `Authorization: Bearer {admin_token}`
+
+**Request Body:**
+```json
+{
+  "title": "Healthcare Innovation Accelerator",
+  "description": "A 6-month program for early-stage healthcare startups",
+  "requirements": "Must have a healthcare-focused venture with initial prototype",
+  "benefits": "Mentorship, funding opportunities, and networking events",
+  "duration": "6 months",
+  "application_deadline": "2024-12-31T23:59:59Z"
+}
+```
+
+**Response (201):**
+```json
+{
+  "program_id": 1,
+  "title": "Healthcare Innovation Accelerator",
+  "description": "A 6-month program for early-stage healthcare startups",
+  "requirements": "Must have a healthcare-focused venture with initial prototype",
+  "benefits": "Mentorship, funding opportunities, and networking events",
+  "duration": "6 months",
+  "application_deadline": "2024-12-31T23:59:59Z",
+  "is_active": 1,
+  "created_by": 1,
+  "created_at": "2025-10-02T10:00:00Z",
+  "updated_at": "2025-10-02T10:00:00Z"
+}
+```
+
+#### GET `/programs/` - Get All Active Programs
+**Response (200):**
+```json
+[
+  {
+    "program_id": 1,
+    "title": "Healthcare Innovation Accelerator",
+    "description": "A 6-month program for early-stage healthcare startups",
+    "requirements": "Must have a healthcare-focused venture with initial prototype",
+    "benefits": "Mentorship, funding opportunities, and networking events",
+    "duration": "6 months",
+    "application_deadline": "2024-12-31T23:59:59Z",
+    "is_active": 1,
+    "created_by": 1,
+    "created_at": "2025-10-02T10:00:00Z",
+    "updated_at": "2025-10-02T10:00:00Z"
+  }
+]
+```
+
+### 🛠️ Admin Management
+
+#### GET `/admin/dashboard/metrics` - Get Platform Metrics
+**Headers:** `Authorization: Bearer {admin_token}`
+
+**Response (200):**
+```json
+{
+  "users": {
+    "total": 150,
+    "admins": 2,
+    "mentors": 25,
+    "members": 123
+  },
+  "ventures": {
+    "total": 87
+  },
+  "applications": {
+    "total": 45,
+    "pending": 12,
+    "approved": 28
+  },
+  "mentor_matches": {
+    "total": 34,
+    "active": 28
+  },
+  "programs": {
+    "total": 5,
+    "active": 4
+  },
+  "resources": {
+    "total": 156
+  }
+}
+```
+
+#### POST `/applications/` - Submit Application (Updated)
+**Headers:** `Authorization: Bearer {token}`
+
+**Request Body:**
+```json
+{
+  "venture_id": 1,
+  "program_id": 1
+}
+```
+
+**Response (201):**
+```json
+{
+  "application_id": 1,
+  "venture_id": 1,
+  "program_id": 1,
+  "status": "submitted",
+  "submission_date": "2025-10-02T10:00:00Z",
+  "reviewed_by": null,
+  "reviewed_at": null
+}
+```
+
 ## 🗄️ Database Schema
 
-The application uses 8 main tables with proper relationships and constraints:
+The application uses 9 main tables with proper relationships and constraints:
 
-- **users**: User accounts and profiles
+- **users**: User accounts and profiles (with Admin, Mentor, Member roles)
 - **ventures**: Project/venture information
+- **programs**: Available programs for ventures to apply to
 - **resourcecategories**: Resource categorization
 - **resources**: Shared resources and documents
-- **applications**: Venture applications
+- **applications**: Venture applications to programs
 - **milestones**: Project milestones
 - **mentormatches**: Mentor-member relationships
 - **messages**: Direct messaging between users
 
-## 🔒 Security Features
+## � User Stories Implementation
+
+### As a Member/Mentee
+- ✅ Log in to access dashboard
+- ✅ View resource center for learning and growth
+- ✅ Apply to available programs
+- ✅ Create and manage venture profiles
+- ✅ View application status (pending, approved, rejected)
+- ✅ Send mentorship requests to mentors
+
+### As a Mentor
+- ✅ Log in to access mentor dashboard
+- ✅ View and respond to mentee requests
+- ✅ Post resources (articles, links, guides)
+- ✅ View mentee profiles and ventures
+- ✅ Manage own profile and expertise
+
+### As a System Admin
+- ✅ Secure admin login with role-based access
+- ✅ View comprehensive platform metrics
+- ✅ Manage users (view, update, deactivate accounts)
+- ✅ Manage programs (create, edit, remove)
+- ✅ Review and approve/reject applications
+
+## �🔒 Security Features
 
 - **JWT Authentication**: Bearer token required for protected endpoints
 - **Password Hashing**: bcrypt encryption for passwords
-- **Role-based Access**: Users can only modify their own data
+- **Role-based Access Control**: Three-tier access (Admin, Mentor, Member)
+- **Admin-only Operations**: Program management and user administration
 - **Input Validation**: Pydantic models ensure data integrity
 - **SQL Injection Protection**: SQLAlchemy ORM prevents injection attacks
 

@@ -13,10 +13,13 @@ def create_application(
     current_user: User = Depends(get_current_user),
     db: Session = Depends(get_db)
 ):
-    # Verify venture exists
-    venture = db.query(Venture).filter(Venture.venture_id == application.venture_id).first()
+    # Verify venture exists and belongs to user
+    venture = db.query(Venture).filter(
+        Venture.venture_id == application.venture_id,
+        Venture.member_id == current_user.user_id
+    ).first()
     if not venture:
-        raise HTTPException(status_code=404, detail="Venture not found")
+        raise HTTPException(status_code=404, detail="Venture not found or does not belong to you")
 
     # Check if user already applied to this venture
     existing_application = db.query(Application).filter(
@@ -25,7 +28,10 @@ def create_application(
     if existing_application:
         raise HTTPException(status_code=400, detail="You have already applied to this venture")
 
-    new_application = Application(venture_id=application.venture_id)
+    new_application = Application(
+        venture_id=application.venture_id,
+        program_id=application.program_id
+    )
     db.add(new_application)
     db.commit()
     db.refresh(new_application)
