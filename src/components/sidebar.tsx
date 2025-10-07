@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Layout, Menu, Button } from "antd";
 import {
   HomeOutlined,
@@ -10,32 +10,75 @@ import {
   MenuFoldOutlined,
   MenuUnfoldOutlined,
 } from "@ant-design/icons";
-import { Link } from "react-router-dom";
-import { ROUTES } from "../routes/routes.";
+import { Link, useNavigate } from "react-router-dom";
+import { ROUTES } from "../routes/routes.tsx";
+import { AuthContext } from "../context/authcontext.tsx";
 
 const { Sider } = Layout;
 
 const Sidebar: React.FC = () => {
   const [collapsed, setCollapsed] = useState(false);
+  const navigate = useNavigate();
+  const authcontext = useContext(AuthContext);
 
   const menuItems = [
-    { key: "dashboard", label: <Link to={ROUTES.DASHBOARD}>Dashboard</Link>, icon: <HomeOutlined /> },
-    { key: "resources", label: <Link to="/resources">Resource Center</Link>, icon: <BookOutlined /> },
-    { key: "programs", label: <Link to="/programs">Programs</Link>, icon: <AppstoreOutlined /> },
-    { key: "ventures", label: <Link to="/ventures">Ventures</Link>, icon: <AppstoreOutlined /> },
-    { key: "mentors", label: <Link to="/mentors">Mentors</Link>, icon: <TeamOutlined /> },
-    { key: "settings", label: <Link to="/settings">Settings</Link>, icon: <SettingOutlined /> },
-    { key: "logout", label: <Link to="/logout">Logout</Link>, icon: <LogoutOutlined /> },
+    {
+      key: "dashboard",
+      label: <Link to={ROUTES.DASHBOARD}>Dashboard</Link>,
+      icon: <HomeOutlined />,
+    },
+    {
+      key: "resources",
+      label: (
+        <Link to={`${ROUTES.DASHBOARD}/${ROUTES.RESOURCE_CENTER}`}>
+          Resource Center
+        </Link>
+      ),
+      icon: <BookOutlined />,
+    },
+    {
+      key: "programs",
+      label: (
+        <Link to={`${ROUTES.DASHBOARD}/${ROUTES.PROGRAMS}`}>Programs</Link>
+      ),
+      icon: <AppstoreOutlined />,
+    },
+    {
+      key: "ventures",
+      label: (
+        <Link to={`${ROUTES.DASHBOARD}/${ROUTES.VENTURES}`}>Ventures</Link>
+      ),
+      icon: <AppstoreOutlined />,
+    },
+    {
+      key: "mentors",
+      label: (
+        <Link to={`${ROUTES.DASHBOARD}/${ROUTES.MENTORS}`}>Mentors</Link>
+      ),
+      icon: <TeamOutlined />,
+    },
+    {
+      key: "settings",
+      label: (
+        <Link to={`${ROUTES.DASHBOARD}/${ROUTES.SETTINGS}`}>Settings</Link>
+      ),
+      icon: <SettingOutlined />,
+    },
+    {
+      key: "logout",
+      label: <Link to="/logout">Logout</Link>,
+      icon: <LogoutOutlined />,
+    },
   ];
 
   return (
     <Sider
       collapsible
       collapsed={collapsed}
-      trigger={null} // custom toggle button
+      trigger={null}
       width={240}
       collapsedWidth={80}
-      className="!bg-[var(--color-primary)] !text-[var(--color-white)] font-[var(--font-inter)] min-h-screen fixed left-0 top-0 h-full"
+      className="!bg-[var(--color-primary)] !text-[var(--color-white)] min-h-screen fixed left-0 top-0 h-full"
     >
       {/* Toggle Button */}
       <div className="flex justify-end p-3 border-b border-[var(--color-darkGray)]">
@@ -55,8 +98,14 @@ const Sidebar: React.FC = () => {
             alt="Profile"
             className="w-20 h-20 rounded-full object-cover"
           />
-          <p className="mt-3 font-semibold text-[var(--color-white)]">CLAUDIAN</p>
-          <Button type="link" className="!text-[var(--color-teal)] !p-0">
+          <p className="mt-3 font-semibold text-[var(--color-white)]">
+            {authcontext?.user?.first_name} {authcontext?.user?.last_name}
+          </p>
+          <Button
+            type="link"
+            className="!text-[var(--color-teal)] !p-0"
+            onClick={() => navigate(`${ROUTES.DASHBOARD}/${ROUTES.PROFILE}`)}
+          >
             Edit Profile
           </Button>
         </div>
