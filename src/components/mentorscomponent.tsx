@@ -9,7 +9,6 @@ import {
   Avatar,
   Drawer,
   Button,
-  Typography,
 } from "antd";
 
 interface Mentor {
