@@ -1,12 +1,12 @@
-import React, { useContext, useState } from "react";
-import { Button, Input, Form, Space, message } from "antd";
+import React, { useContext } from "react";
+import { Button, Input, Form, Space } from "antd";
 import {
   GoogleOutlined,
   FacebookOutlined,
   LockOutlined,
   MailOutlined,
 } from "@ant-design/icons";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ROUTES } from "../routes/routes";
 import { AuthContext } from "../context/authcontext";
 
@@ -20,49 +20,12 @@ const LoginPage: React.FC = () => {
 
     console.log(authContext);
     
-  const navigate = useNavigate();
+;
 
-  // const {loading} = useContext(AuthContext)
-  // const [loading, setLoading] = useState(false);
-  const [messageApi, contextHolder] = message.useMessage();
-
-  const onFinish = async (values: LoginFormValues) => {
-    // setLoading(true);
-    try {
-      const response = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/login`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(values),
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        messageApi.success("Login successful!");
-        localStorage.setItem("access_token", data.access_token);
-        localStorage.setItem("user", JSON.stringify(data.user));
-        console.log(data);
-        
-        navigate(ROUTES.DASHBOARD);
-      } else {
-        if (data.detail) {
-          messageApi.error(data.detail);
-        } else {
-          messageApi.error(data.message || "Login failed. Please check your credentials.");
-        }
-      }
-    } catch (error) {
-      messageApi.error("Network error. Please try again.");
-    } finally {
-      // setLoading(false);
-    }
-  };
+ 
 
   return (
     <>
-      {contextHolder}
       <div className="min-h-screen flex flex-col md:flex-row">
         {/* Left side image (on top for small screens) */}
         <div className="w-full md:w-1/2 flex items-center justify-center relative">
