@@ -1,5 +1,4 @@
 import { Layout, Button } from "antd";
-import React from "react";
 
 const { Content } = Layout;
 
@@ -7,7 +6,6 @@ function WhyUs() {
   return (
     <Content className="py-20 bg-white">
       <div className="container mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
-        
         {/* Right: Image */}
         <div className="flex-1 flex justify-center">
           <img
@@ -41,8 +39,6 @@ function WhyUs() {
             Learn More
           </Button>
         </div>
-
-        
       </div>
     </Content>
   );
