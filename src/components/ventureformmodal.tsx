@@ -1,5 +1,9 @@
 import React from "react";
+<<<<<<< HEAD
 import { Modal, Form, Input, Select } from "antd";
+=======
+import { Modal, Form, Input, Select} from "antd";
+>>>>>>> 141509edb0c56a4f4d89207eb2b278b5a43f6c9d
 
 const { Option } = Select;
 
