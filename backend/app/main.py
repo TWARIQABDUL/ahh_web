@@ -28,7 +28,7 @@ app.add_middleware(
 
 @app.get("/", summary="Welcome message", description="Returns a welcome message for the African Healthpreneurship Hub API")
 def read_root():
-    return {"message": "Welcome to the African Healthpreneurship Hub API", "version": "1.0.0", "docs": "/docs", "redoc": "/redoc"}
+    return {"message": "Welcome to the African Healthpreneurship Hub API Test", "version": "1.0.0", "docs": "/docs", "redoc": "/redoc"}
 
 app.include_router(auth_router)
 app.include_router(users_router)
