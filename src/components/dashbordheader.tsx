@@ -22,7 +22,7 @@ const DashboardHeader: React.FC = () => {
   const { user, logout } = authContext;
 
   // 🧠 Defensive handling in case user isn’t loaded yet
-  const userName = user?.fullName || user?.name || "User";
+  // const userName = user?.fullName || user?.name || "User";
   const userRole = user?.role || "Member";
 
   // ✅ Fixed logout handler — should be on Menu.Item, not on the icon
