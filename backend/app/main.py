@@ -20,7 +20,7 @@ app = FastAPI(title="African Healthpreneurship Hub API")
 # CORS setup
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "http://localhost:5174"],  # Frontend origins
+    allow_origins=["http://localhost:5173", "http://localhost:5174","https://ahh-web-beryl.vercel.app"],  # Frontend origins
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"]
