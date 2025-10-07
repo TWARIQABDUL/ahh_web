@@ -13,7 +13,6 @@ import {
   message,
 } from "antd";
 import { useNavigate } from "react-router-dom";
-import axios from "axios";
 import axiosInstance from "../config/axiosConfig";
 
 const ProgramsPage: React.FC = () => {
