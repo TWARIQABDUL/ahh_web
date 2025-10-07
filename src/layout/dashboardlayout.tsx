@@ -2,7 +2,7 @@ import { Layout } from "antd";
 import React from "react";
 import { Outlet } from "react-router-dom";
 import Sidebar from "../components/sidebar";
-import DashboardHeader from "../components/dashbordheader";
+// import DashboardHeader from "../components/dashbordheader";
 // import DashboardHeader from "../components/DashboardHeader";
 
 const Dashboardlayout: React.FC = () => {
@@ -16,7 +16,7 @@ const Dashboardlayout: React.FC = () => {
         }}
       >
         {/* Sticky header */}
-        <DashboardHeader />
+        {/* <DashboardHeader /> */}
 
         {/* Page content */}
         <Layout.Content style={{ padding: "24px" }}>

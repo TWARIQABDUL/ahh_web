@@ -1,12 +1,11 @@
 import { StrictMode } from "react";
 import { createRoot } from "react-dom/client";
 import "./index.css";
-import App from "./App.tsx";
 // import Login from './pages/login.tsx'
 import LoginPage from "./pages/login.tsx";
 import RegisterPage from "./pages/register.tsx";
 import { Route, BrowserRouter as Router, Routes } from "react-router-dom";
-import { ROUTES } from "./routes/routes..tsx";
+import { ROUTES } from "./routes/routes.tsx";
 import theme from "./theme/theme.ts";
 import { ConfigProvider } from "antd";
 // import Home from './pages/home.tsx'

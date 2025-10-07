@@ -9,7 +9,6 @@ import {
   Avatar,
   Drawer,
   Button,
-  Typography,
 } from "antd";
 
 interface Mentor {
@@ -165,11 +164,7 @@ const MentorsPage: React.FC = () => {
       >
         {selectedMentor && (
           <>
-            <Avatar
-              src={selectedMentor.avatar}
-              size={80}
-              className="mb-4"
-            />
+            <Avatar src={selectedMentor.avatar} size={80} className="mb-4" />
             <p>
               <strong>Location:</strong> {selectedMentor.location}
             </p>
@@ -180,8 +175,7 @@ const MentorsPage: React.FC = () => {
               </Tag>
             </p>
             <p>
-              <strong>Expertise:</strong>{" "}
-              {selectedMentor.expertise.join(", ")}
+              <strong>Expertise:</strong> {selectedMentor.expertise.join(", ")}
             </p>
             <p className="mt-4">{selectedMentor.bio}</p>
 
