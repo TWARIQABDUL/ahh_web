@@ -10,6 +10,7 @@ import VenturePreview from "../components/venturesummary";
 const { Content } = Layout;
 
 const Dashboard: React.FC = () => {
+  
    const ventures = [
     {
       id: "1",

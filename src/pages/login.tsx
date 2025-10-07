@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Button, Input, Form, Space, message } from "antd";
 import {
   GoogleOutlined,
@@ -8,6 +8,7 @@ import {
 } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { ROUTES } from "../routes/routes";
+import { AuthContext } from "../context/authcontext";
 
 interface LoginFormValues {
   email: string;
@@ -15,12 +16,18 @@ interface LoginFormValues {
 }
 
 const LoginPage: React.FC = () => {
+    const authContext = useContext(AuthContext); 
+
+    console.log(authContext);
+    
   const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+
+  // const {loading} = useContext(AuthContext)
+  // const [loading, setLoading] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
 
   const onFinish = async (values: LoginFormValues) => {
-    setLoading(true);
+    // setLoading(true);
     try {
       const response = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/login`, {
         method: "POST",
@@ -49,7 +56,7 @@ const LoginPage: React.FC = () => {
     } catch (error) {
       messageApi.error("Network error. Please try again.");
     } finally {
-      setLoading(false);
+      // setLoading(false);
     }
   };
 
@@ -89,7 +96,7 @@ const LoginPage: React.FC = () => {
             <Form<LoginFormValues>
               name="login"
               layout="vertical"
-              onFinish={onFinish}
+              onFinish={authContext?.login}
               className="space-y-4"
             >
               <Form.Item
@@ -121,10 +128,11 @@ const LoginPage: React.FC = () => {
                   type="primary"
                   htmlType="submit"
                   size="large"
-                  loading={loading}
+        
+                  loading={authContext?.loading}
                   className="w-full rounded-lg bg-blue-600 hover:bg-blue-700 shadow-md transition-transform transform hover:scale-[1.02]"
                 >
-                  {loading ? "Logging in..." : "Login"}
+                  {authContext?.loading ? "Logging in..." : "Login"}
                 </Button>
               </Form.Item>
             </Form>

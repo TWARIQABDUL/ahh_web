@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Card,
@@ -10,38 +10,58 @@ import {
   Typography,
   Row,
   Col,
+  Spin,
 } from "antd";
 import { UploadOutlined } from "@ant-design/icons";
-
-// Reuse same programs data for demo
-const programs = [
-  {
-    id: "1",
-    title: "Healthcare Innovation Challenge",
-    description: "Submit your ideas to transform healthcare delivery in Africa.",
-    deadline: "2025-11-30",
-    status: "Open",
-  },
-  {
-    id: "2",
-    title: "Women in Tech Fellowship",
-    description: "Empowering women innovators with mentorship and funding.",
-    deadline: "2025-12-15",
-    status: "Upcoming",
-  },
-];
+import axios from "axios";
+import axiosInstance from "../config/axiosConfig";
 
 const ProgramApplication: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const [form] = Form.useForm();
 
-  const program = programs.find((p) => p.id === id);
+  const [program, setProgram] = useState<any>(null);
+  const [loading, setLoading] = useState(true);
 
-  const handleSubmit = (values: any) => {
-    console.log("Application Submitted:", { programId: id, ...values });
-    message.success("Application submitted successfully!");
-    navigate("/programs"); // redirect back after submit
+  // ✅ Fetch program details
+  useEffect(() => {
+    const fetchProgram = async () => {
+      try {
+        const res = await axiosInstance.get(`/programs/${id}`);
+        setProgram(res.data);
+      } catch (error) {
+        console.error(error);
+        message.error("Failed to load program details.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchProgram();
+  }, [id]);
+
+  // ✅ Handle form submission
+  const handleSubmit = async (values: any) => {
+    try {
+      // Example payload (adjust according to your backend)
+      const payload = {
+        program_id: program.program_id,
+        full_name: values.fullName,
+        email: values.email,
+        venture: values.venture,
+        website: values.website,
+        proposal: values.proposal,
+      };
+
+      // TODO: Replace this with your actual POST endpoint for applications
+      await axios.post("https://ahh-web-2.onrender.com/applications", payload);
+
+      message.success("Application submitted successfully!");
+      navigate("/programs");
+    } catch (error) {
+      console.error(error);
+      message.error("Failed to submit application.");
+    }
   };
 
   const handleUpload = (info: any) => {
@@ -51,6 +71,14 @@ const ProgramApplication: React.FC = () => {
       message.error(`${info.file.name} upload failed`);
     }
   };
+
+  if (loading) {
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <Spin size="large" />
+      </div>
+    );
+  }
 
   if (!program) {
     return (
@@ -67,8 +95,20 @@ const ProgramApplication: React.FC = () => {
           Apply for {program.title}
         </Typography.Title>
         <p className="text-gray-600 mb-4">{program.description}</p>
+        <p className="text-sm text-gray-500 mb-2">
+          <strong>Duration:</strong> {program.duration}
+        </p>
+        <p className="text-sm text-gray-500 mb-2">
+          <strong>Requirements:</strong> {program.requirements}
+        </p>
+        <p className="text-sm text-gray-500 mb-4">
+          <strong>Benefits:</strong> {program.benefits}
+        </p>
         <p className="text-sm text-gray-500 mb-6">
-          Deadline: <strong>{program.deadline}</strong>
+          Deadline:{" "}
+          <strong>
+            {new Date(program.application_deadline).toLocaleDateString()}
+          </strong>
         </p>
 
         <Form
@@ -126,14 +166,14 @@ const ProgramApplication: React.FC = () => {
             <Input.TextArea rows={4} />
           </Form.Item>
 
-          {/* ✅ Upload Multiple Documents with Preview */}
+          {/* Upload Files */}
           <Form.Item label="Upload Supporting Documents" name="documents">
             <Upload
               name="files"
               listType="picture"
               multiple
               maxCount={5}
-              action="/upload" // TODO: replace with backend API
+              action="https://ahh-web-2.onrender.com/upload" // Replace with real upload endpoint
               onChange={handleUpload}
             >
               <Button icon={<UploadOutlined />}>Upload Files</Button>
@@ -145,7 +185,7 @@ const ProgramApplication: React.FC = () => {
             <Button
               type="primary"
               htmlType="submit"
-              className="bg-[var(--color-teal)]"
+              className="bg-[var(--color-teal)] hover:!bg-[var(--color-primary)]"
             >
               Submit Application
             </Button>
