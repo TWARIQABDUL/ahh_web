@@ -49,10 +49,7 @@ const ProgramsPage: React.FC = () => {
 
     if (!program.is_active) return "Closed";
     if (deadline < now) return "Closed";
-    if (
-      deadline > now &&
-      (deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24) > 7
-    )
+    if (deadline > now && (deadline.getTime() - now.getTime()) / (1000 * 60 * 60 * 24) > 7)
       return "Open";
     return "Upcoming";
   };
@@ -161,9 +158,7 @@ const ProgramsPage: React.FC = () => {
                     <p className="text-sm text-gray-500 mb-4">
                       Deadline:{" "}
                       <strong>
-                        {new Date(
-                          program.application_deadline
-                        ).toLocaleDateString()}
+                        {new Date(program.application_deadline).toLocaleDateString()}
                       </strong>
                     </p>
 

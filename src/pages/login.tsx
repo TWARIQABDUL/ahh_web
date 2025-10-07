@@ -1,12 +1,12 @@
-import React, { useContext } from "react";
-import { Button, Input, Form, Space } from "antd";
+import React, { useContext, useState } from "react";
+import { Button, Input, Form, Space, message } from "antd";
 import {
   GoogleOutlined,
   FacebookOutlined,
   LockOutlined,
   MailOutlined,
 } from "@ant-design/icons";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ROUTES } from "../routes/routes";
 import { AuthContext } from "../context/authcontext";
 
@@ -16,15 +16,53 @@ interface LoginFormValues {
 }
 
 const LoginPage: React.FC = () => {
-  const authContext = useContext(AuthContext);
+    const authContext = useContext(AuthContext); 
 
-  console.log(authContext);
+    console.log(authContext);
+    
+  const navigate = useNavigate();
 
   // const {loading} = useContext(AuthContext)
   // const [loading, setLoading] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const onFinish = async (values: LoginFormValues) => {
+    // setLoading(true);
+    try {
+      const response = await fetch(`${import.meta.env.VITE_BASE_URL}/auth/login`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(values),
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        messageApi.success("Login successful!");
+        localStorage.setItem("access_token", data.access_token);
+        localStorage.setItem("user", JSON.stringify(data.user));
+        console.log(data);
+        
+        navigate(ROUTES.DASHBOARD);
+      } else {
+        if (data.detail) {
+          messageApi.error(data.detail);
+        } else {
+          messageApi.error(data.message || "Login failed. Please check your credentials.");
+        }
+      }
+    } catch (error) {
+      messageApi.error("Network error. Please try again.");
+    } finally {
+      // setLoading(false);
+    }
+  };
 
   return (
     <>
+      {contextHolder}
       <div className="min-h-screen flex flex-col md:flex-row">
         {/* Left side image (on top for small screens) */}
         <div className="w-full md:w-1/2 flex items-center justify-center relative">
@@ -63,9 +101,7 @@ const LoginPage: React.FC = () => {
             >
               <Form.Item
                 name="email"
-                rules={[
-                  { required: true, message: "Please enter your email!" },
-                ]}
+                rules={[{ required: true, message: "Please enter your email!" }]}
               >
                 <Input
                   prefix={<MailOutlined className="text-gray-400" />}
@@ -77,9 +113,7 @@ const LoginPage: React.FC = () => {
 
               <Form.Item
                 name="password"
-                rules={[
-                  { required: true, message: "Please enter your password!" },
-                ]}
+                rules={[{ required: true, message: "Please enter your password!" }]}
               >
                 <Input.Password
                   prefix={<LockOutlined className="text-gray-400" />}
@@ -94,6 +128,7 @@ const LoginPage: React.FC = () => {
                   type="primary"
                   htmlType="submit"
                   size="large"
+        
                   loading={authContext?.loading}
                   className="w-full rounded-lg bg-blue-600 hover:bg-blue-700 shadow-md transition-transform transform hover:scale-[1.02]"
                 >
@@ -109,6 +144,7 @@ const LoginPage: React.FC = () => {
               <hr className="flex-grow border-gray-300" />
             </div>
 
+            
             <div className="flex gap-4">
               <Button
                 icon={<GoogleOutlined />}
@@ -128,10 +164,7 @@ const LoginPage: React.FC = () => {
 
             <p className="mt-6 text-center text-sm text-gray-500">
               Don’t have an account?{" "}
-              <Link
-                to={ROUTES.REGISTER}
-                className="text-blue-600 hover:underline"
-              >
+              <Link to={ROUTES.REGISTER} className="text-blue-600 hover:underline">
                 Sign up
               </Link>
             </p>
