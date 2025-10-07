@@ -18,7 +18,7 @@ interface LoginFormValues {
 const LoginPage: React.FC = () => {
     const authContext = useContext(AuthContext); 
 
-    console.log(authContext);
+    // console.log(authContext);
     
 ;
 
