@@ -3,7 +3,7 @@ import React from "react";
 
 const { Content } = Layout;
 
-function WhyUs() {
+const WhyUs:React.FC = ()=> {
   return (
     <Content className="py-20 bg-white">
       <div className="container mx-auto px-6 flex flex-col md:flex-row items-center gap-12">
