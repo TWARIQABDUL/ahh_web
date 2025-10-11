@@ -1,5 +1,5 @@
-import React, { useContext, useState } from "react";
-import { Layout, Menu, Button } from "antd";
+import React, { useContext, useState, useMemo } from "react";
+import { Layout, Menu, Button, Tag } from "antd";
 import {
   HomeOutlined,
   BookOutlined,
@@ -9,6 +9,8 @@ import {
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
+  UserOutlined,
+  BarChartOutlined,
 } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { ROUTES } from "../routes/routes.tsx";
@@ -21,11 +23,29 @@ const Sidebar: React.FC = () => {
   const navigate = useNavigate();
   const authcontext = useContext(AuthContext);
 
-  const menuItems = [
+  const role = authcontext?.user?.role || "Member"; // fallback to Member
+
+  // ✅ Define separate menus
+  const memberMenu = [
     {
       key: "dashboard",
       label: <Link to={ROUTES.DASHBOARD}>Dashboard</Link>,
       icon: <HomeOutlined />,
+    },
+    {
+      key: "programs",
+      label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.PROGRAMS}`}>Programs</Link>,
+      icon: <AppstoreOutlined />,
+    },
+    {
+      key: "ventures",
+      label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.VENTURES}`}>Ventures</Link>,
+      icon: <AppstoreOutlined />,
+    },
+    {
+      key: "mentors",
+      label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.MENTORS}`}>Mentors</Link>,
+      icon: <TeamOutlined />,
     },
     {
       key: "resources",
@@ -37,39 +57,52 @@ const Sidebar: React.FC = () => {
       icon: <BookOutlined />,
     },
     {
+      key: "settings",
+      label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.SETTINGS}`}>Settings</Link>,
+      icon: <SettingOutlined />,
+    },
+  ];
+
+  const adminMenu = [
+    {
+      key: "dashboard",
+      label: <Link to={ROUTES.DASHBOARD}>Admin Dashboard</Link>,
+      icon: <HomeOutlined />,
+    },
+    {
+      key: "users",
+      label: <Link to={`${ROUTES.DASHBOARD}/users`}>Manage Users</Link>,
+      icon: <UserOutlined />,
+    },
+    {
       key: "programs",
-      label: (
-        <Link to={`${ROUTES.DASHBOARD}/${ROUTES.PROGRAMS}`}>Programs</Link>
-      ),
+      label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.PROGRAMS}`}>Manage Programs</Link>,
       icon: <AppstoreOutlined />,
     },
     {
-      key: "ventures",
-      label: (
-        <Link to={`${ROUTES.DASHBOARD}/${ROUTES.VENTURES}`}>Ventures</Link>
-      ),
-      icon: <AppstoreOutlined />,
-    },
-    {
-      key: "mentors",
-      label: (
-        <Link to={`${ROUTES.DASHBOARD}/${ROUTES.MENTORS}`}>Mentors</Link>
-      ),
-      icon: <TeamOutlined />,
+      key: "reports",
+      label: <Link to={`${ROUTES.DASHBOARD}/reports`}>Reports</Link>,
+      icon: <BarChartOutlined />,
     },
     {
       key: "settings",
-      label: (
-        <Link to={`${ROUTES.DASHBOARD}/${ROUTES.SETTINGS}`}>Settings</Link>
-      ),
+      label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.SETTINGS}`}>Settings</Link>,
       icon: <SettingOutlined />,
     },
-    {
-      key: "logout",
-      label: <Link to="/logout">Logout</Link>,
-      icon: <LogoutOutlined />,
-    },
   ];
+
+  // ✅ Decide which to render based on role
+  const menuItems = useMemo(() => {
+    const baseItems = role === "Admin" ? adminMenu : memberMenu;
+    return [
+      ...baseItems,
+      {
+        key: "logout",
+        label: <Link to="/logout">Logout</Link>,
+        icon: <LogoutOutlined />,
+      },
+    ];
+  }, [role]);
 
   return (
     <Sider
@@ -90,7 +123,7 @@ const Sidebar: React.FC = () => {
         />
       </div>
 
-      {/* Profile Section (hidden when collapsed) */}
+      {/* Profile Section */}
       {!collapsed && (
         <div className="flex flex-col items-center py-8 border-b border-[var(--color-darkGray)]">
           <img
@@ -98,12 +131,15 @@ const Sidebar: React.FC = () => {
             alt="Profile"
             className="w-20 h-20 rounded-full object-cover"
           />
-          <p className="mt-3 font-semibold text-[var(--color-white)]">
+          <p className="mt-3 font-semibold text-[var(--color-white)] text-center">
             {authcontext?.user?.first_name} {authcontext?.user?.last_name}
           </p>
+          <Tag color="blue" className="mt-2">
+            {role}
+          </Tag>
           <Button
             type="link"
-            className="!text-[var(--color-teal)] !p-0"
+            className="!text-[var(--color-teal)] !p-0 mt-1"
             onClick={() => navigate(`${ROUTES.DASHBOARD}/${ROUTES.PROFILE}`)}
           >
             Edit Profile
