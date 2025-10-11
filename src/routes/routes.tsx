@@ -11,5 +11,6 @@ export const ROUTES = {
     VENTURES: "ventures",
     APLICATION:"programs/:id/apply",
     VENTURE_PROFILE: "ventures/:id",
+    USER:"users"
 
 };
