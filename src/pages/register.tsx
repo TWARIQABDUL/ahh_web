@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { Button, Input, Form, Select, message } from "antd";
+import React, { useContext } from "react";
+import { Button, Input, Form, Select } from "antd";
 import {
   GoogleOutlined,
   FacebookOutlined,
@@ -8,8 +8,9 @@ import {
   UserOutlined,
   PhoneOutlined,
 } from "@ant-design/icons";
-import { Link, useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { ROUTES } from "../routes/routes";
+import { AuthContext } from "../context/authcontext";
 
 const { Option } = Select;
 
@@ -25,67 +26,11 @@ interface RegisterFormValues {
 
 const RegisterPage: React.FC = () => {
 
-  const baseUrl = import.meta.env.VITE_BASE_URL
-  const navigate = useNavigate();
-  const [loading, setLoading] = useState(false);
+  // const baseUrl = import.meta.env.VITE_BASE_URL
+  // const [loading, setLoading] = useState(false);
+  const authcontext = useContext(AuthContext)
   const [form] = Form.useForm<RegisterFormValues>();
 
-  const onFinish = async (values: RegisterFormValues) => {
-    setLoading(true);
-
-    const nameParts = values.fullName.trim().split(" ");
-    const first_name = nameParts[0];
-    const last_name = nameParts.slice(1).join(" ");
-
-    const payload = {
-      email: values.email,
-      first_name,
-      last_name,
-      password: values.password,
-      profile_details: values.profile_details,
-      role: "Member",
-    };
-
-    try {
-      const response = await fetch(
-        `${baseUrl}/auth/signup`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(payload),
-        }
-      );
-
-      const data = await response.json();
-
-      if (response.ok) {
-        message.success("Registration successful!");
-        navigate(ROUTES.LOGIN);
-      } else {
-        // ✅ Handle field-specific errors
-        if (data.detail && data.detail.toLowerCase().includes("email")) {
-          form.setFields([
-            {
-              name: "email",
-              errors: [data.detail],
-            },
-          ]);
-        } else if (data.errors && Array.isArray(data.errors)) {
-          data.errors.forEach((err: string) =>
-            message.error(err)
-          );
-        } else if (typeof data.message === "string") {
-          message.error(data.message);
-        } else {
-          message.error("Registration failed. Please check your details.");
-        }
-      }
-    } catch (error) {
-      message.error("Network error. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  };
 
   return (
     <div className="min-h-screen flex flex-col md:flex-row">
@@ -119,7 +64,7 @@ const RegisterPage: React.FC = () => {
             form={form}
             name="register"
             layout="vertical"
-            onFinish={onFinish}
+            onFinish={authcontext?.register }
             className="space-y-4"
           >
             {/* Full Name + Phone */}
@@ -204,11 +149,13 @@ const RegisterPage: React.FC = () => {
               <Button
                 type="primary"
                 htmlType="submit"
+                disabled={authcontext?.loading}
+                
                 size="large"
-                loading={loading}
+                loading={authcontext?.loading}
                 className="w-full rounded-lg bg-blue-600 hover:bg-blue-700"
               >
-                {loading ? "Registering..." : "Register"}
+                {authcontext?.loading ? "Registering..." : "Register"}
               </Button>
             </Form.Item>
           </Form>
