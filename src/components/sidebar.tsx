@@ -3,14 +3,14 @@ import { Layout, Menu, Button, Tag } from "antd";
 import {
   HomeOutlined,
   BookOutlined,
-  AppstoreOutlined,
   TeamOutlined,
   SettingOutlined,
   LogoutOutlined,
   MenuFoldOutlined,
   MenuUnfoldOutlined,
   UserOutlined,
-  BarChartOutlined,
+  AppstoreOutlined,
+  FileTextOutlined,
 } from "@ant-design/icons";
 import { Link, useNavigate } from "react-router-dom";
 import { ROUTES } from "../routes/routes.tsx";
@@ -23,77 +23,43 @@ const Sidebar: React.FC = () => {
   const navigate = useNavigate();
   const authcontext = useContext(AuthContext);
 
-  const role = authcontext?.user?.role || "Member"; // fallback to Member
+  const role = authcontext?.user?.role || "Member"; // fallback
 
-  // ✅ Define separate menus
+  // === Member Menu ===
   const memberMenu = [
-    {
-      key: "dashboard",
-      label: <Link to={ROUTES.DASHBOARD}>Dashboard</Link>,
-      icon: <HomeOutlined />,
-    },
-    {
-      key: "programs",
-      label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.PROGRAMS}`}>Programs</Link>,
-      icon: <AppstoreOutlined />,
-    },
-    {
-      key: "ventures",
-      label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.VENTURES}`}>Ventures</Link>,
-      icon: <AppstoreOutlined />,
-    },
-    {
-      key: "mentors",
-      label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.MENTORS}`}>Mentors</Link>,
-      icon: <TeamOutlined />,
-    },
-    {
-      key: "resources",
-      label: (
-        <Link to={`${ROUTES.DASHBOARD}/${ROUTES.RESOURCE_CENTER}`}>
-          Resource Center
-        </Link>
-      ),
-      icon: <BookOutlined />,
-    },
-    {
-      key: "settings",
-      label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.SETTINGS}`}>Settings</Link>,
-      icon: <SettingOutlined />,
-    },
+    { key: "dashboard", label: <Link to={ROUTES.DASHBOARD}>Dashboard</Link>, icon: <HomeOutlined /> },
+    { key: "programs", label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.PROGRAMS}`}>Programs</Link>, icon: <AppstoreOutlined /> },
+    { key: "ventures", label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.VENTURES}`}>Ventures</Link>, icon: <AppstoreOutlined /> },
+    { key: "mentors", label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.MENTORS}`}>Mentors</Link>, icon: <TeamOutlined /> },
+    { key: "resources", label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.RESOURCE_CENTER}`}>Resource Center</Link>, icon: <BookOutlined /> },
+    { key: "settings", label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.SETTINGS}`}>Settings</Link>, icon: <SettingOutlined /> },
   ];
 
+  // === Admin Menu ===
   const adminMenu = [
-    {
-      key: "dashboard",
-      label: <Link to={ROUTES.DASHBOARD}>Admin Dashboard</Link>,
-      icon: <HomeOutlined />,
-    },
-    {
-      key: "users",
-      label: <Link to={`${ROUTES.DASHBOARD}/users`}>Manage Users</Link>,
-      icon: <UserOutlined />,
-    },
-    {
-      key: "programs",
-      label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.PROGRAMS}`}>Manage Programs</Link>,
-      icon: <AppstoreOutlined />,
-    },
-    {
-      key: "reports",
-      label: <Link to={`${ROUTES.DASHBOARD}/reports`}>Reports</Link>,
-      icon: <BarChartOutlined />,
-    },
-    {
-      key: "settings",
-      label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.SETTINGS}`}>Settings</Link>,
-      icon: <SettingOutlined />,
-    },
+    { key: "dashboard", label: <Link to={ROUTES.DASHBOARD}>Admin Dashboard</Link>, icon: <HomeOutlined /> },
+    { key: "users", label: <Link to={`${ROUTES.DASHBOARD}/users`}>Manage Users</Link>, icon: <UserOutlined /> },
+    { key: "programs", label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.PROGRAMS}`}>Manage Programs</Link>, icon: <AppstoreOutlined /> },
+    { key: "reports", label: <Link to={`${ROUTES.DASHBOARD}/reports`}>Reports</Link>, icon: <FileTextOutlined /> },
+    { key: "settings", label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.SETTINGS}`}>Settings</Link>, icon: <SettingOutlined /> },
   ];
 
-  // ✅ Decide which to render based on role
+  // === Mentor Menu ===
+  const mentorMenu = [
+    { key: "dashboard", label: <Link to={ROUTES.DASHBOARD}>Mentor Dashboard</Link>, icon: <HomeOutlined /> },
+    { key: "requests", label: <Link to={`${ROUTES.DASHBOARD}/requests`}>Mentee Requests</Link>, icon: <TeamOutlined /> },
+    { key: "mentees", label: <Link to={`${ROUTES.DASHBOARD}/mentees`}>My Mentees</Link>, icon: <UserOutlined /> },
+    { key: "resources", label: <Link to={`${ROUTES.DASHBOARD}/resources`}>My Resources</Link>, icon: <BookOutlined /> },
+    { key: "settings", label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.SETTINGS}`}>Settings</Link>, icon: <SettingOutlined /> },
+  ];
+
+  // === Pick menu based on role ===
   const menuItems = useMemo(() => {
-    const baseItems = role === "Admin" ? adminMenu : memberMenu;
+    let baseItems;
+    if (role === "Admin") baseItems = adminMenu;
+    else if (role === "Mentor") baseItems = mentorMenu;
+    else baseItems = memberMenu;
+
     return [
       ...baseItems,
       {
@@ -147,7 +113,7 @@ const Sidebar: React.FC = () => {
         </div>
       )}
 
-      {/* Navigation Menu */}
+      {/* Menu */}
       <Menu
         mode="inline"
         defaultSelectedKeys={["dashboard"]}

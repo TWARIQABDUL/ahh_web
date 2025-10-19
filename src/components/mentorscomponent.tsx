@@ -1,193 +1,175 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Card,
   Row,
   Col,
   Input,
-  Select,
   Tag,
   Avatar,
   Drawer,
   Button,
+  message,
+  Spin,
 } from "antd";
+import axiosInstance from "../config/axiosConfig";
 
 interface Mentor {
-  id: string;
-  name: string;
-  expertise: string[];
-  location: string;
-  bio: string;
-  status: "Available" | "Unavailable";
-  avatar?: string;
+  user_id: number;
+  first_name: string;
+  last_name: string;
+  role: string;
+  profile_details?: string;
+  created_at: string;
 }
 
-const allMentors: Mentor[] = [
-  {
-    id: "1",
-    name: "Dr. Amina K.",
-    expertise: ["Healthcare", "Digital Health"],
-    location: "Kigali, Rwanda",
-    bio: "Public health specialist with 10+ years mentoring startups in healthcare.",
-    status: "Available",
-    avatar: "/images/mentor1.png",
-  },
-  {
-    id: "2",
-    name: "John Doe",
-    expertise: ["Agriculture", "Business Strategy"],
-    location: "Nairobi, Kenya",
-    bio: "AgriTech entrepreneur supporting early-stage farmers' cooperatives.",
-    status: "Unavailable",
-    avatar: "/images/mentor2.png",
-  },
-  {
-    id: "3",
-    name: "Grace W.",
-    expertise: ["Education", "EdTech"],
-    location: "Lagos, Nigeria",
-    bio: "Education innovator passionate about digital learning platforms.",
-    status: "Available",
-    avatar: "/images/mentor3.png",
-  },
-];
-
 const MentorsPage: React.FC = () => {
+  const [mentors, setMentors] = useState<Mentor[]>([]);
   const [search, setSearch] = useState("");
-  const [expertiseFilter, setExpertiseFilter] = useState<string | null>(null);
-  const [statusFilter, setStatusFilter] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
   const [selectedMentor, setSelectedMentor] = useState<Mentor | null>(null);
   const [isDrawerOpen, setIsDrawerOpen] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
+  const [sending, setSending] = useState(false);
 
-  // ✅ Filtered mentors
-  const filteredMentors = allMentors.filter((m) => {
-    const matchesSearch =
-      m.name.toLowerCase().includes(search.toLowerCase()) ||
-      m.expertise.some((exp) =>
-        exp.toLowerCase().includes(search.toLowerCase())
-      );
-    const matchesExpertise = expertiseFilter
-      ? m.expertise.includes(expertiseFilter)
-      : true;
-    const matchesStatus = statusFilter ? m.status === statusFilter : true;
-    return matchesSearch && matchesExpertise && matchesStatus;
+  // ✅ Fetch mentors
+  const fetchMentors = async () => {
+    try {
+      const response = await axiosInstance.get("/users/mentors");
+      setMentors(response.data);
+    } catch (error) {
+      messageApi.error("Failed to load mentors");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchMentors();
+  }, []);
+
+  // ✅ Filter mentors
+  const filteredMentors = mentors.filter((m) => {
+    const fullName = `${m.first_name} ${m.last_name}`.toLowerCase();
+    return fullName.includes(search.toLowerCase());
   });
 
+  // ✅ Drawer control
   const openDrawer = (mentor: Mentor) => {
     setSelectedMentor(mentor);
     setIsDrawerOpen(true);
   };
-
   const closeDrawer = () => {
     setSelectedMentor(null);
     setIsDrawerOpen(false);
   };
 
-  const getStatusColor = (status: Mentor["status"]) =>
-    status === "Available" ? "green" : "red";
+  // ✅ Request mentorship
+  const handleRequestMentorship = async () => {
+    if (!selectedMentor) return;
+
+    try {
+      setSending(true);
+
+      await axiosInstance.post(`/mentor-matches/request?mentor_id=${selectedMentor.user_id}`);
+
+      messageApi.success(
+        `✅ Mentorship request sent to ${selectedMentor.first_name}`
+      );
+      closeDrawer();
+    } catch (error: any) {
+      console.error(error);
+      if (error.response?.data?.detail) {
+        messageApi.error(`❌ ${error.response.data.detail}`);
+      } else {
+        messageApi.error("❌ Failed to send mentorship request");
+      }
+    } finally {
+      setSending(false);
+    }
+  };
 
   return (
     <div className="p-6 bg-gray-100 min-h-screen">
+      {contextHolder}
       <h1 className="text-2xl font-bold text-[var(--color-primary)] mb-4">
         Mentors
       </h1>
 
-      {/* ✅ Filters */}
-      <div className="flex flex-col sm:flex-row gap-4 mb-6">
-        <Input.Search
-          placeholder="Search mentors..."
-          allowClear
-          onChange={(e) => setSearch(e.target.value)}
-          className="max-w-sm"
-        />
-        <Select
-          placeholder="Filter by expertise"
-          allowClear
-          className="w-48"
-          onChange={(val) => setExpertiseFilter(val)}
-        >
-          <Select.Option value="Healthcare">Healthcare</Select.Option>
-          <Select.Option value="Agriculture">Agriculture</Select.Option>
-          <Select.Option value="Education">Education</Select.Option>
-        </Select>
-        <Select
-          placeholder="Filter by status"
-          allowClear
-          className="w-48"
-          onChange={(val) => setStatusFilter(val)}
-        >
-          <Select.Option value="Available">Available</Select.Option>
-          <Select.Option value="Unavailable">Unavailable</Select.Option>
-        </Select>
-      </div>
+      {/* ✅ Search */}
+      <Input.Search
+        placeholder="Search mentors by name..."
+        allowClear
+        onChange={(e) => setSearch(e.target.value)}
+        className="max-w-sm mb-6"
+      />
 
-      {/* ✅ Mentor Cards */}
-      <Row gutter={[16, 16]}>
-        {filteredMentors.map((mentor) => (
-          <Col xs={24} sm={12} lg={8} key={mentor.id}>
-            <Card
-              hoverable
-              onClick={() => openDrawer(mentor)}
-              className="shadow-md rounded-lg"
-            >
-              <div className="flex items-center gap-4">
-                <Avatar size={64} src={mentor.avatar}>
-                  {mentor.name[0]}
-                </Avatar>
-                <div className="flex-1">
-                  <h3 className="font-bold text-[var(--color-primary)]">
-                    {mentor.name}
-                  </h3>
-                  <p className="text-sm text-gray-500">{mentor.location}</p>
-                  <Tag color={getStatusColor(mentor.status)}>
-                    {mentor.status}
-                  </Tag>
+      {loading ? (
+        <div className="flex justify-center items-center py-10">
+          <Spin size="large" />
+        </div>
+      ) : (
+        <Row gutter={[16, 16]}>
+          {filteredMentors.map((mentor) => (
+            <Col xs={24} sm={12} lg={8} key={mentor.user_id}>
+              <Card
+                hoverable
+                onClick={() => openDrawer(mentor)}
+                className="shadow-md rounded-lg"
+              >
+                <div className="flex items-center gap-4">
+                  <Avatar size={64}>{mentor.first_name[0]}</Avatar>
+                  <div>
+                    <h3 className="font-bold text-[var(--color-primary)]">
+                      {mentor.first_name} {mentor.last_name}
+                    </h3>
+                    <Tag color="green">Mentor</Tag>
+                    <p className="text-sm text-gray-500 mt-1">
+                      Joined {new Date(mentor.created_at).toLocaleDateString()}
+                    </p>
+                  </div>
                 </div>
-              </div>
-              <div className="mt-3">
-                {mentor.expertise.map((exp, idx) => (
-                  <Tag key={idx} color="blue">
-                    {exp}
-                  </Tag>
-                ))}
-              </div>
-            </Card>
-          </Col>
-        ))}
-      </Row>
+                {mentor.profile_details && (
+                  <p className="mt-3 text-gray-600 text-sm">
+                    {mentor.profile_details.slice(0, 80)}...
+                  </p>
+                )}
+              </Card>
+            </Col>
+          ))}
+        </Row>
+      )}
 
       {/* ✅ Drawer */}
       <Drawer
-        title={selectedMentor?.name}
+        title={
+          selectedMentor
+            ? `${selectedMentor.first_name} ${selectedMentor.last_name}`
+            : ""
+        }
         open={isDrawerOpen}
         onClose={closeDrawer}
         width={480}
       >
         {selectedMentor && (
           <>
-            <Avatar
-              src={selectedMentor.avatar}
-              size={80}
-              className="mb-4"
-            />
+            <Avatar size={80} className="mb-4">
+              {selectedMentor.first_name[0]}
+            </Avatar>
             <p>
-              <strong>Location:</strong> {selectedMentor.location}
+              <strong>Email:</strong>{" "}
+              {selectedMentor.first_name.toLowerCase()}@example.com
             </p>
             <p>
-              <strong>Status:</strong>{" "}
-              <Tag color={getStatusColor(selectedMentor.status)}>
-                {selectedMentor.status}
-              </Tag>
+              <strong>Role:</strong> {selectedMentor.role}
             </p>
-            <p>
-              <strong>Expertise:</strong>{" "}
-              {selectedMentor.expertise.join(", ")}
-            </p>
-            <p className="mt-4">{selectedMentor.bio}</p>
+            <p className="mt-3">{selectedMentor.profile_details}</p>
 
             <div className="flex justify-end mt-6">
               <Button
                 type="primary"
-                disabled={selectedMentor.status !== "Available"}
+                onClick={handleRequestMentorship}
+                loading={sending}
+                disabled={sending}
                 className="bg-[var(--color-teal)]"
               >
                 Request Mentorship

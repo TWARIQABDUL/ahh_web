@@ -26,6 +26,7 @@ import Programapplicationpage from './pages/programapplicationpage.tsx'
 import ProtectedRoute from './routes/protectedroute.tsx'
 import ProfilesPage from './pages/profilepage.tsx'
 import AllUsers from './pages/allUsers.tsx'
+import RequestPage from './pages/requests.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -58,6 +59,9 @@ createRoot(document.getElementById('root')!).render(
               <Route path={ROUTES.VENTURES} element={<VenturesPage />} />
               <Route path={ROUTES.APLICATION} element={<Programapplicationpage />} />
               <Route path={ROUTES.USER} element={<AllUsers />} />
+              <Route path={ROUTES.REQUESTS} element={<RequestPage />} />
+
+
 
 
             </Route>
