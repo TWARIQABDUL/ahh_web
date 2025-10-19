@@ -32,7 +32,9 @@ const Sidebar: React.FC = () => {
     { key: "ventures", label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.VENTURES}`}>Ventures</Link>, icon: <AppstoreOutlined /> },
     { key: "mentors", label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.MENTORS}`}>Mentors</Link>, icon: <TeamOutlined /> },
     { key: "resources", label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.RESOURCE_CENTER}`}>Resource Center</Link>, icon: <BookOutlined /> },
+    { key: "mymentor", label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.MYMENTORS}`}>My Mentors</Link>, icon: <SettingOutlined /> },
     { key: "settings", label: <Link to={`${ROUTES.DASHBOARD}/${ROUTES.SETTINGS}`}>Settings</Link>, icon: <SettingOutlined /> },
+
   ];
 
   // === Admin Menu ===

@@ -12,6 +12,8 @@ export const ROUTES = {
     APLICATION:"programs/:id/apply",
     VENTURE_PROFILE: "ventures/:id",
     USER:"users",
-    REQUESTS:"requests"
+    REQUESTS:"requests",
+    MYMENTORS:"mymentors",
+    RESOURCES:"resources"
 
 };

@@ -27,6 +27,8 @@ import ProtectedRoute from './routes/protectedroute.tsx'
 import ProfilesPage from './pages/profilepage.tsx'
 import AllUsers from './pages/allUsers.tsx'
 import RequestPage from './pages/requests.tsx'
+import MenteeMentorsPgae from './pages/menteementorsPgae.tsx'
+import MentorResources from './components/mentorResourceComp.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -60,6 +62,9 @@ createRoot(document.getElementById('root')!).render(
               <Route path={ROUTES.APLICATION} element={<Programapplicationpage />} />
               <Route path={ROUTES.USER} element={<AllUsers />} />
               <Route path={ROUTES.REQUESTS} element={<RequestPage />} />
+              <Route path={ROUTES.MYMENTORS} element={<MenteeMentorsPgae />} />
+              <Route path={ROUTES.RESOURCES} element={<MentorResources />} />
+
 
 
 
