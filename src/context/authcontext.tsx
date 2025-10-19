@@ -4,12 +4,14 @@ import { useNavigate } from "react-router-dom";
 import { jwtDecode, type JwtPayload } from "jwt-decode";
 import { message } from "antd";
 import { ROUTES } from "../routes/routes";
+import axios from "axios";
 
 interface AuthContextType {
   user: any;
   accessToken: string | null;
   login: (values: LoginFormValues) => Promise<void>;
   logout: () => void;
+  register: (farmdata: RegisterFormValues) => void;
   loading: boolean;
   isInitialized: boolean;
 }
@@ -17,6 +19,15 @@ interface AuthContextType {
 interface LoginFormValues {
   email: string;
   password: string;
+}
+interface RegisterFormValues {
+  fullName: string;
+  phone: string;
+  email: string;
+  gender: string;
+  password: string;
+  confirmPassword: string;
+  profile_details: string;
 }
 
 export const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -28,7 +39,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   const [isInitialized, setIsInitialized] = useState(false);
   const navigate = useNavigate();
   const [messageApi, contextHolder] = message.useMessage();
-
+  const baseUrl = import.meta.env.VITE_BASE_URL
   useEffect(() => {
     const storedToken = localStorage.getItem("access_token");
     const storedUser = localStorage.getItem("user");
@@ -52,6 +63,46 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
     setIsInitialized(true); // ✅ mark done
   }, []);
 
+  const register = async (values: RegisterFormValues) => {
+    const nameParts = values.fullName.trim().split(" ");
+    const first_name = nameParts[0];
+    const last_name = nameParts.slice(1).join(" ");
+
+    const payload = {
+      email: values.email,
+      first_name,
+      last_name,
+      password: values.password,
+      profile_details: values.profile_details,
+      role: "Member",
+    };
+    setLoading(true);
+    try {
+
+      const registerresp = await axios.post(
+        `${baseUrl}/auth/signup`,
+        payload,
+      )
+
+      if (registerresp.status == 200) {
+        messageApi.success("Registration Sucsefull")
+        console.log("registration succes");
+        console.log(registerresp.data);
+        setLoading(false)
+        navigate(ROUTES.LOGIN)
+      }else{
+        setLoading(false)
+
+        messageApi.error("Registration Failed")
+      }
+
+    } catch (error) {
+      messageApi.error("Something went Wrong"+error)
+      setLoading(false)
+    }
+
+
+  }
   const login = async (values: LoginFormValues) => {
     setLoading(true);
     try {
@@ -87,7 +138,7 @@ export const AuthProvider: React.FC<{ children: ReactNode }> = ({ children }) =>
   };
 
   return (
-    <AuthContext.Provider value={{ user, accessToken, login, logout, loading, isInitialized }}>
+    <AuthContext.Provider value={{ user, accessToken, login, logout, register, loading, isInitialized }}>
       {contextHolder}
       {children}
     </AuthContext.Provider>
