@@ -299,7 +299,8 @@ const MentorResources: React.FC = () => {
                 type="primary"
                 icon={<PlusOutlined />}
                 onClick={openCreate}
-                style={{ background: "var(--color-teal)", borderColor: "transparent" }}
+                className="btn-primary"
+                // style={{ background: "var(--color-teal)", borderColor: "transparent" }}
               >
                 New Resource
               </Button>

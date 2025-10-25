@@ -34,9 +34,20 @@ interface MenteeProfile {
 
 interface Venture {
   venture_id: number;
+  member_id: number;
   venture_name: string;
   description: string;
   created_at: string;
+  member: {
+    user_id: number;
+    first_name: string;
+    last_name: string;
+    email: string;
+    role: string;
+    is_approved: boolean;
+    profile_details: string | null;
+    created_at: string;
+  };
 }
 
 const MentorRequestsComponent: React.FC = () => {
@@ -73,8 +84,11 @@ const MentorRequestsComponent: React.FC = () => {
     try {
       const [profileRes, venturesRes] = await Promise.all([
         axiosInstance.get(`/users/${memberId}`),
-        axiosInstance.get(`/ventures/?member_id=${memberId}`),
+        axiosInstance.get(`/dashboard/mentees/${memberId}/ventures`), // updated endpoint
       ]);
+      console.log("✅ Mentee profile:", profileRes.data);
+      console.log("✅ Mentee ventures:", venturesRes.data);
+
       setMentee(profileRes.data);
       setVentures(venturesRes.data);
     } catch (error) {

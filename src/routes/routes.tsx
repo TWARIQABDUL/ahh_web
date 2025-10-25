@@ -14,6 +14,8 @@ export const ROUTES = {
     USER:"users",
     REQUESTS:"requests",
     MYMENTORS:"mymentors",
-    RESOURCES:"resources"
+    RESOURCES:"resources",
+    MENTEES:"mentees"
+
 
 };
