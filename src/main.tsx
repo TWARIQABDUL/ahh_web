@@ -29,6 +29,7 @@ import AllUsers from './pages/allUsers.tsx'
 import RequestPage from './pages/requests.tsx'
 import MenteeMentorsPgae from './pages/menteementorsPgae.tsx'
 import MentorResources from './components/mentorResourceComp.tsx'
+import MenteesPage from './pages/menteesPage.tsx'
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
@@ -64,7 +65,7 @@ createRoot(document.getElementById('root')!).render(
               <Route path={ROUTES.REQUESTS} element={<RequestPage />} />
               <Route path={ROUTES.MYMENTORS} element={<MenteeMentorsPgae />} />
               <Route path={ROUTES.RESOURCES} element={<MentorResources />} />
-
+              <Route path={ROUTES.MENTEES} element={<MenteesPage />} />
 
 
 

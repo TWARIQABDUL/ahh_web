@@ -1,11 +1,17 @@
-import React from "react";
+import React, { useContext } from "react";
 import { Layout } from "antd";
 
 import AdminStats from "./adminstats";
+import { AuthContext } from "../context/authcontext";
+import MentorStats from "./mentorStats";
 
 const { Content } = Layout;
 
 const DashboardComponent: React.FC = () => {
+
+
+    const dataContext = useContext(AuthContext)
+  const role = dataContext?.user?.role || "Member"; // fallback
 
     return (
         <Content className="p-6 bg-gray-100 h-dvh">
@@ -18,7 +24,9 @@ const DashboardComponent: React.FC = () => {
             </p>
 
             <div className="mt-6">
-                <AdminStats />
+                {role === "Admin" && <AdminStats />}
+                {role === "Mentor" && <MentorStats />}
+                
             </div>
 
 
